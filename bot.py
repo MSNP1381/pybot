@@ -7,10 +7,10 @@
 
 import telebot
 from telebot import types
-import csv
+import os.path
 import time
 
-  
+
 API_TOKEN = '2140199987:AAHH3NvanKtAr6C2t4uUkpXp3fzWOia99b0'
 
 bot = telebot.TeleBot(API_TOKEN)
@@ -31,15 +31,20 @@ class User:
 # `/start` command handler
 #
 # That command only sends you 'Just use /find command!'
-
+@bot.message_handler(commands=['stop'])
+def removeusr(message):
+    if(message.chat.id in user_dict.keys()):
+        del(user_dict[message.chat.id])
 @bot.message_handler(commands=['help', 'start'])
 def send_welcome(message):
+    if(message.chat.id in user_dict.keys()):
+        return
     msg = bot.reply_to(message,""" به ربات دفتر فرهنگی دانشکده کامپیوتر خوش آمدید.
                 کار هاتون رو از منو پایین انتخاب کنید
 """)
 
     markup = types.ReplyKeyboardMarkup(one_time_keyboard=True)
-    markup.add('کلاس ریاضی')
+    markup.add('کلاس C#')
     msg = bot.reply_to(message, 'کلاس خود را انتخاب کنید', reply_markup=markup)
     bot.register_next_step_handler(msg, option_level)
 
@@ -51,18 +56,19 @@ def send_welcome(message):
 
 
 def option_level(message):
-    
+
     try:
         chat_id = message.chat.id
         ClsName = message.text
 
-        if (ClsName == u'کلاس ریاضی'):
+        if (ClsName == u'کلاس C#'):
             user_dict[chat_id] = User(ClsName)
             msg = bot.reply_to(message, 'کد دانشجویی خود را وارد کنید')
             bot.register_next_step_handler(msg, get_stdCode)
         else:
-            raise Exception("انتخاب نا معتبر")
-       
+            msg = bot.send_message(message.chat.id, "انتخاب نامعتبر")
+            bot.register_next_step_handler(msg, option_level)
+
     except Exception as e:
         msg=bot.reply_to(message, 'oooops')
         bot.register_next_step_handler(msg, send_welcome)
@@ -70,30 +76,28 @@ def option_level(message):
 
 
 def get_stdCode(message):
-    with open('db.csv', mode='w') as employee_file: 
-        employee_writer = csv.writer(employee_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+    with open('db.csv', mode='a') as employee_file:
         try:
             std_code = message.text
-            chat_id = message.chat.id
-
+            chat_id = message.chat.id                
             if (std_code.isdigit()):
                 if (std_code.startswith('40052') and len(std_code) == 9):
                     u = user_dict[chat_id]
                     u.student_code = std_code
-                    employee_writer.writerow([chat_id, std_code,time.time()])
-    
+                    employee_file.write([chat_id, std_code,time.time()])
+
                     bot.reply_to(message, "Tlink 400")
                 elif (std_code[2:].startswith('52') and len(std_code) == 8):
                     u = user_dict[chat_id]
                     u.student_code = std_code
-                    
-                    employee_writer.writerow([chat_id, std_code,time.time()])
+
+                    employee_file.writerow([chat_id, std_code,time.time()])
                     bot.reply_to(message, "link comp")
                 elif (len(std_code) == 8):
                     u = user_dict[chat_id]
                     u.student_code = std_code
-                    employee_writer.writerow([chat_id, std_code,time.time()])
-                    
+                    employee_file.writerow([chat_id, std_code,time.time()])
+
                     bot.reply_to(message, "link all")
                 else:
                     bot.reply_to(message, "کد دانشجویی شما معتبر نیست")
