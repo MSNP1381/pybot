@@ -9,7 +9,9 @@ import telebot
 from telebot import types
 import os.path
 import time
-
+link_400='https://ppng.ir/d/CnxH'
+link_comp='https://ppng.ir/d/phyf'
+link_all='https://ppng.ir/d/Gl78'
 
 API_TOKEN = '2140199987:AAHH3NvanKtAr6C2t4uUkpXp3fzWOia99b0'
 
@@ -85,20 +87,19 @@ def get_stdCode(message):
                     u = user_dict[chat_id]
                     u.student_code = std_code
                     employee_file.write([chat_id, std_code,time.time()])
-
-                    bot.reply_to(message, "Tlink 400")
+                    bot.reply_to(message, link_400)
                 elif (std_code[2:].startswith('52') and len(std_code) == 8):
                     u = user_dict[chat_id]
                     u.student_code = std_code
 
                     employee_file.writerow([chat_id, std_code,time.time()])
-                    bot.reply_to(message, "link comp")
+                    bot.reply_to(message,link_comp)
                 elif (len(std_code) == 8):
                     u = user_dict[chat_id]
                     u.student_code = std_code
                     employee_file.writerow([chat_id, std_code,time.time()])
 
-                    bot.reply_to(message, "link all")
+                    bot.reply_to(message, link_all)
                 else:
                     bot.reply_to(message, "کد دانشجویی شما معتبر نیست")
                     msg = bot.send_message(message.chat.id, 'کد دانشجویی خود را دوباره وارد کنید')
