@@ -13,7 +13,7 @@ link_400='https://ppng.ir/d/CnxH'
 link_comp='https://ppng.ir/d/phyf'
 link_all='https://ppng.ir/d/Gl78'
 
-API_TOKEN = '2140199987:AAHH3NvanKtAr6C2t4uUkpXp3fzWOia99b0'
+API_TOKEN = ''
 
 bot = telebot.TeleBot(API_TOKEN)
 user_dict = {}
